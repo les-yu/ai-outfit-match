@@ -1,36 +1,165 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 穿搭AI - 拍一件衣服，看它怎么搭
 
-## Getting Started
+> AI 智能穿搭推荐平台。上传一件衣服的照片，获得 3 套专业搭配方案。
 
-First, run the development server:
+## 产品定位
+
+**「拍一件衣服，看它怎么搭」** —— 解决「买了件衣服不知道怎么穿」的具体痛点。
+
+- 上传任意单品照片 → AI 识别品类、颜色、风格
+- 自动生成 3 套完整搭配（通勤 / 约会 / 潮流）
+- 每套搭配包含：上装、下装、鞋、配饰 + 配色逻辑
+
+## 功能特性
+
+| 功能 | 说明 |
+|------|------|
+| 智能识别 | 基于 Claude 多模态能力，精准识别服装品类、颜色、风格 |
+| 场景推荐 | 覆盖日常通勤、约会休闲、潮流个性、正式场合、运动活力 |
+| 个性定制 | 支持输入身高、体重、风格偏好，获得更精准的推荐 |
+| 搭配展示 | 色卡可视化、配色逻辑说明、风格关键词标签 |
+| 历史记录 | 本地存储推荐记录，随时回看之前的搭配方案 |
+| 一键分享 | 支持原生分享 API / 剪贴板复制 |
+
+## 技术栈
+
+| 层级 | 技术 | 说明 |
+|------|------|------|
+| 框架 | Next.js 16 | App Router，前后端一体 |
+| 语言 | TypeScript | 类型安全 |
+| 样式 | Tailwind CSS | 原子化 CSS，快速开发 |
+| AI | Claude Sonnet | 多模态理解，图片→搭配推荐 |
+| 部署 | Vercel | 零配置部署 |
+| 存储 | localStorage | 客户端历史记录 |
+
+## 项目结构
+
+```
+ai-outfit-match/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── recommend/
+│   │   │       └── route.ts        # AI 推荐 API
+│   │   ├── history/
+│   │   │   └── page.tsx            # 历史记录页
+│   │   ├── result/
+│   │   │   └── page.tsx            # 搭配结果页
+│   │   ├── globals.css             # 全局样式
+│   │   ├── layout.tsx              # 全局布局
+│   │   └── page.tsx                # 首页（上传）
+│   ├── components/
+│   │   ├── ImageUpload.tsx         # 图片上传组件
+│   │   ├── OutfitCard.tsx          # 搭配卡片组件
+│   │   ├── SceneSelector.tsx       # 场景选择组件
+│   │   ├── ShareButton.tsx         # 分享按钮组件
+│   │   └── UserProfile.tsx         # 用户信息组件
+│   ├── lib/
+│   │   ├── api.ts                  # API 调用封装
+│   │   ├── history.ts              # 历史记录管理
+│   │   └── prompt.ts               # AI Prompt 工程
+│   └── types/
+│       └── outfit.ts               # TypeScript 类型定义
+├── .env.example                    # 环境变量模板
+├── package.json
+└── README.md
+```
+
+## 快速开始
+
+### 1. 克隆项目
+
+```bash
+git clone https://github.com/les-yu/ai-outfit-match.git
+cd ai-outfit-match
+```
+
+### 2. 安装依赖
+
+```bash
+npm install
+```
+
+### 3. 配置环境变量
+
+复制 `.env.example` 为 `.env.local`，填入你的 Claude API Key：
+
+```bash
+cp .env.example .env.local
+```
+
+```env
+# 从 https://console.anthropic.com/ 获取
+ANTHROPIC_API_KEY=your_api_key_here
+```
+
+### 4. 启动开发服务器
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+访问 [http://localhost:3000](http://localhost:3000) 即可使用。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 部署
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Vercel 一键部署
 
-## Learn More
+1. Fork 本仓库
+2. 在 [Vercel](https://vercel.com) 中导入项目
+3. 添加环境变量 `ANTHROPIC_API_KEY`
+4. 点击 Deploy
 
-To learn more about Next.js, take a look at the following resources:
+### 本地构建
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+npm start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 数据流
 
-## Deploy on Vercel
+```
+用户上传图片
+    ↓
+前端压缩 (canvas, max 1024px)
+    ↓
+Base64 编码
+    ↓
+POST /api/recommend
+    ↓
+Claude 多模态 API (图片 + Prompt)
+    ↓
+结构化 JSON 返回
+    ↓
+前端渲染搭配卡片
+    ↓
+保存到 localStorage
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 成本估算
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| 项目 | 费用 |
+|------|------|
+| Claude API 调用 | ~$0.01/次（图片+文字） |
+| Vercel 部署 | 免费额度内 |
+| 域名 | ¥50-100/年（可选） |
+| **月活 1000 用户** | **约 ¥200-500/月** |
+
+## 开发规范
+
+- **Commit 格式**：`type: 描述`（feat / fix / docs / style / refactor）
+- **分支策略**：main 分支为主分支，功能开发在 feature 分支
+- **代码风格**：ESLint + Prettier
+
+## 后续规划
+
+- [ ] 接入电商商品链接（搭配推荐 → 购买闭环）
+- [ ] 用户账号系统（跨设备同步历史）
+- [ ] 衣橱管理（多件单品组合搭配）
+- [ ] 社区分享（用户搭配方案 UGC）
+- [ ] 分享海报生成（html2canvas）
+
+## License
+
+MIT
