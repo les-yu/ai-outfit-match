@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import OutfitCard from "@/components/OutfitCard";
@@ -8,7 +8,7 @@ import ShareButton from "@/components/ShareButton";
 import { getHistoryById } from "@/lib/history";
 import { HistoryRecord } from "@/types/outfit";
 
-export default function ResultPage() {
+function ResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
@@ -90,5 +90,20 @@ export default function ResultPage() {
         AI 推荐仅供参考，实际搭配请结合个人喜好与场合需求
       </p>
     </div>
+  );
+}
+
+export default function ResultPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+          <div className="skeleton h-8 w-48 mx-auto mb-4" />
+          <div className="skeleton h-64 w-full" />
+        </div>
+      }
+    >
+      <ResultContent />
+    </Suspense>
   );
 }
