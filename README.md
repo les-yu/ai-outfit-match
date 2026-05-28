@@ -14,7 +14,7 @@
 
 | 功能 | 说明 |
 |------|------|
-| 智能识别 | 基于 Claude 多模态能力，精准识别服装品类、颜色、风格 |
+| 智能识别 | 基于小米 MiMo 多模态能力，精准识别服装品类、颜色、风格 |
 | 场景推荐 | 覆盖日常通勤、约会休闲、潮流个性、正式场合、运动活力 |
 | 个性定制 | 支持输入身高、体重、风格偏好，获得更精准的推荐 |
 | 搭配展示 | 色卡可视化、配色逻辑说明、风格关键词标签 |
@@ -28,7 +28,7 @@
 | 框架 | Next.js 16 | App Router，前后端一体 |
 | 语言 | TypeScript | 类型安全 |
 | 样式 | Tailwind CSS | 原子化 CSS，快速开发 |
-| AI | Claude Sonnet | 多模态理解，图片→搭配推荐 |
+| AI | 小米 MiMo | Anthropic 兼容格式，多模态理解 |
 | 部署 | Vercel | 零配置部署 |
 | 存储 | localStorage | 客户端历史记录 |
 
@@ -82,15 +82,17 @@ npm install
 
 ### 3. 配置环境变量
 
-复制 `.env.example` 为 `.env.local`，填入你的 Claude API Key：
+复制 `.env.example` 为 `.env.local`，填入你的小米 MiMo API Key：
 
 ```bash
 cp .env.example .env.local
 ```
 
 ```env
-# 从 https://console.anthropic.com/ 获取
-ANTHROPIC_API_KEY=your_api_key_here
+# 从 https://open.mi.com/ 获取
+MIMO_API_KEY=your_api_key_here
+MIMO_BASE_URL=https://token-plan-cn.xiaomimimo.com/anthropic
+MIMO_MODEL=mimo-v2.5-pro
 ```
 
 ### 4. 启动开发服务器
@@ -107,7 +109,7 @@ npm run dev
 
 1. Fork 本仓库
 2. 在 [Vercel](https://vercel.com) 中导入项目
-3. 添加环境变量 `ANTHROPIC_API_KEY`
+3. 添加环境变量：`MIMO_API_KEY`、`MIMO_BASE_URL`、`MIMO_MODEL`
 4. 点击 Deploy
 
 ### 本地构建
@@ -128,7 +130,7 @@ Base64 编码
     ↓
 POST /api/recommend
     ↓
-Claude 多模态 API (图片 + Prompt)
+小米 MiMo API (Anthropic 兼容格式)
     ↓
 结构化 JSON 返回
     ↓
@@ -137,11 +139,22 @@ Claude 多模态 API (图片 + Prompt)
 保存到 localStorage
 ```
 
+## 可用模型
+
+| 模型 | 说明 |
+|------|------|
+| `mimo-v2.5-pro` | 推荐，最新旗舰模型 |
+| `mimo-v2.5` | 标准版本 |
+| `mimo-v2-pro` | 上一代旗舰 |
+| `mimo-v2-omni` | 全模态模型（文本+语音+视觉） |
+
+在 `.env.local` 中修改 `MIMO_MODEL` 即可切换模型。
+
 ## 成本估算
 
 | 项目 | 费用 |
 |------|------|
-| Claude API 调用 | ~$0.01/次（图片+文字） |
+| MiMo API 调用 | 以小米开放平台定价为准 |
 | Vercel 部署 | 免费额度内 |
 | 域名 | ¥50-100/年（可选） |
 | **月活 1000 用户** | **约 ¥200-500/月** |

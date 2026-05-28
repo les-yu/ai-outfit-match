@@ -4,7 +4,8 @@ import { buildSystemPrompt, buildUserPrompt } from "@/lib/prompt";
 import { RecommendResponse } from "@/types/outfit";
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: process.env.MIMO_API_KEY,
+  baseURL: process.env.MIMO_BASE_URL,
 });
 
 export async function POST(request: NextRequest) {
@@ -40,8 +41,10 @@ export async function POST(request: NextRequest) {
       style_preference
     );
 
+    const model = process.env.MIMO_MODEL || "mimo-v2.5-pro";
+
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-6-20250514",
+      model,
       max_tokens: 2048,
       system: systemPrompt,
       messages: [
@@ -77,7 +80,6 @@ export async function POST(request: NextRequest) {
     // 解析 JSON 响应
     let result: RecommendResponse;
     try {
-      // 尝试从响应中提取 JSON（AI 可能会包裹在 markdown 代码块中）
       let jsonStr = textBlock.text;
       const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (jsonMatch) {
